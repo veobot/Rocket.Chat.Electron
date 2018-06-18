@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 import servers from './servers';
 import sidebar from './sidebar';
-import { desktopCapturer, ipcRenderer } from 'electron';
+import { desktopCapturer, ipcRenderer, remote } from 'electron';
 
 class WebView extends EventEmitter {
     constructor () {
@@ -129,6 +129,11 @@ class WebView extends EventEmitter {
             if (e.resourceType === 'mainFrame' && e.httpResponseCode >= 500) {
                 webviewObj.loadURL('file://' + __dirname + '/loading-error.html');
             }
+        });
+
+        webviewObj.addEventListener('new-window', (e) => {
+            e.preventDefault();
+            remote.shell.openExternal(e.url);
         });
 
         this.webviewParentElement.appendChild(webviewObj);
